@@ -1,0 +1,77 @@
+Tue Mar 10, 2015 
+
+	Nonvolatile memory: does not lose its content when power is switched off.
+
+	ROM: 
+	EEPROM and flash RAM: nonvolatile, slower than RAM, can be rewritten
+	CMOS: volatile, Hold current time, date and configuration parameters, use small battery
+
+	Performance: 
+		Response time: The time between the start and completion of a task
+
+		Throughput: The total amount of work done in a given time
+
+		If Perf is response time: 
+			Perf_x = 1 / ExecutionTime_x 
+
+		CPU ExecutionTime = CPU ClockCycles * ClockCycleTime 
+
+		CPU ExecutionTime = CPU ClockCycles / ClockRate 
+
+		CPU clock cycles = InstructionsForAProgram * CPI
+
+			CPI is the average number of clock cycles that each instruction takes to execute
+
+		CPU ExecutionTime = Instruction count x CPI x Clock cycle time
+
+		CPU Clock cycles = sum(CPI[i] * C[i])
+			C[i] is the count of number of instruction of class i . 
+
+		Increases in CPU performance can come from 3 sources: 
+			+ ^ clock rate
+			+ v CPI via improving processor organization 
+			+ Compiler enhancements that lower the instruction count or generate instructions with a lower average CPI
+		
+Thu Mar 12, 2015 
+
+	There are 2 methods to load Constant from register 
+
+	Registers $s0 to $s7 map onto registers 16 to 23
+	Registers $t0 to $t7 map onto registers 8 to 15
+
+	R-Type : op rs rt rd shamt funct 
+			 6  5  5  5  5     6
+
+	I-Type : op rs rt const/address 
+			 6  5  5  16 
+			 => immediate or data transfer (cond. branch)
+
+	J-Type : op address 
+			 6  26 
+			 => uncond. branch 
+
+
+	Opcode tells the format of the instruction
+
+	j Label 
+	jr reg : jump to address in a register 
+
+	jal ProcedureAddress 
+		-> jump to the address 
+		-> $ra = PC + 4
+
+	caller : calling program 
+	callee : be called 
+
+	$gp : access to static data 
+
+	lui : laod upper immediately 
+
+	All conditional branches use PC-relative addressing
+
+	
+
+
+
+
+

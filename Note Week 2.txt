@@ -1,0 +1,162 @@
+Thu Jan 22, 2015 --------
+
+	Instruction: word of machine's language 
+	Instruction set: vocabulary of machine language 
+
+	Note: 
+		In Midterm/Final test, you have to include the comments for EACH LINE of code. 
+
+		Do not write 2 instruction in the same line 
+
+	You have only 3 operand for each instruction in MIPS (with Intel 8086 instruction, we have only 2 operand)
+
+	Example: 	
+		add a, b, c # do  a = b + c
+		sub d, a, e # do  d = a + e 
+
+	Example: 
+		f = (g + h) - (i + j)
+		In MIPS code: 
+			add a, g, h 
+			add b, i, j
+			sub f, a, b
+
+	We have only 32 registers in MIPS computer 
+
+	Use for variables in C, Java .. : $s0, $s1,. ...
+	Temporary: $t0, $t1, .... 
+
+	Example: 
+		f = (g + h) - (i + j)
+		Assuming f, g, h, i and j are assigned to the registers $s0, $s1, $s2, $s3 and $s4, respectively. What is the compiled MIPS assembly code?
+
+			add $t0, $s1, $s2 # do  t0 = g + h 
+			add $t1, $s3, $s4 # do  t1 = i + j 
+			sub $s0, $t0, $t1 # do  f = (g + h) - (i + j)
+
+	CPU can only do arthimetic operation in CPU, then copy the result back to memory, then release the registers for other purpose. 
+
+	Instruction: 
+		lw  (load word from memory) ~ move (in 8086 instruction)
+		ex:  lw $t0, 8($s3) # $t0 = Mem[$$s3 + 8] = A[8]
+			(8 is the offset, $s3 is base register)
+
+	Example:
+		g = h + A[8] 
+
+		In MIPS code: 
+			lw $t0, 8($s3) # $t0 = Mem[$$s3 + 8] = A[8]
+			add $s1, $s2, $t0 # g = h + Mem[$s3 + 8] = h + A[8] 
+
+	In array of Word: 
+		 lw $t0, 32($s3) # $t0 = Mem[$$s3 + 32] = A[8]
+
+	Example: 
+		A[12] = h + A[8]
+		MIPS: 
+			lw $t0, 32($s3) # $t0 = Mem[$s3 + 32] = A[8]
+			add $t0, $s2, $t0 
+			sw $t0, 48($s3) 
+
+	Example: 
+		g = h + A[i];
+		MIPS: 
+			add $t0, $s4, $s4 # do t0 = s4 + s4 = 2 * s4
+			add $t0, $t0, $t0 # t0 = t0 + t0 = 2 * t0 = 4 * s4 
+			add $t0, $t0, $s3 # t0 = 4*i + s3 
+			lw $t1, 0($t0) # t1 = Mem[$t0 + 0] = A[i] 
+			add $s1, $s2, $t1 # g = h + A[i]
+
+	Load constant to Reg: 
+		addi $s3, $s3, 4   (4 must be a const) : used to add const 
+
+	Compiler tries to keep most frequently used  variables in registers and places the rest in memory. 
+
+	Process of putting less commonly used variables (or those needed later) into memory is called spilling registers.
+
+	We can access 2^30 addresses in 32 bits machine (cause 2^32 / 4 = 2^30)  (4 is bytes need for address) 
+
+	MIPS Fields : I-Type  vs  R-Type 
+
+	Example (slide 32/40) 
+		op 	 rs   rt 		const or address
+		35	 8    9  		 	800
+
+		op 	 rs   rt   rd 	 shamt   funct  
+		0  	 16   8    8     0       32 
+
+	MIPS decision-making instructions: 
+	Conditional branches: 
+		beq  : branch if equal 
+		bne  : branch if not equal 
+
+	Example: 
+		if(i==j) f= g + h;
+		else f = g - h;
+
+		MIPS: 
+			beq $s3, $s4, L1
+			add $s0
+			... 
+
+	Loop:....
+		Example: 
+			Loop: 
+				g = g + A[i]
+				i = i + j;
+				if (i != h) goto Loop;
+
+			MIPS: 
+			Loop:
+				add $t0, $s3, $s3 # do t0 = s3 + s3 = 2 * s3
+				add $t0, $t0, $t0 # t0 = t0 + t0 = 2 * t0 = 4 * s3 
+				add $t0, $t0, $s5 # t0 = 4*i + s3 
+				lw $t1, 0($t0) # t1 = Mem[$t0 + 0] = A[i] 
+				add $s1, $s1, $t1 # g = g + A[i]
+				add s3, s3, $s4
+				bne $s2, $s3, Loop 
+
+		Example 2: 
+			While (save[i] == k) i = i + j;
+
+			MIPS: 
+
+			Ver1: 
+				j START
+				LOOP: 
+					add $s3, $s3, $s4 # i = i + j 
+ 				START:
+					sll $t0, $s3, 2 # t0 = i << 2  
+					add $t0, $t0, $s6 # t0 = 4*i + s3 # t0 = t0 + 
+					lw $t1, 0($t0) # t1 = Mem[$t0 + 0] = A[i] 
+					beq $t1, $s5, LOOP
+
+			Ver2: 
+					sll $t0, $s3, 2 
+					sll $t1, $s4, 2
+					add $t0, $t0, $s4
+				Loop: 
+					lw $t2, 0($t0) 
+					bne $t2, $s5, Exit
+					add $t0, $t0, $t1 
+					j Loop 
+				Exit: 
+					sub $s3, $t0, $s6
+					srl $s3, $s3, 2 
+
+			Ver3:
+					sll $t2, $s4, 2 # t2 = 4*j 
+					sll $t0, $s3, 2 # t0 = 4i 
+					add $t0, $t0, $s4
+					j Begin 
+				Loop:
+					add $t0, $t0, $t2 
+				Begin: 
+					lw $t1, 0($t0)
+					beg $t1, $s5, Loop #if (save[i] == k) goto Loop 
+
+					
+
+
+
+

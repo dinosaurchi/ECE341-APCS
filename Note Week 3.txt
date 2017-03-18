@@ -1,0 +1,117 @@
+Thu Jan 29, 2015 
+
+	slt : set if less than 
+		slt $t0, $s3, $s4 
+		-> if (s3 < s4) t0 = 0 
+	slti : set if less than immediately 
+
+	Example: 
+		While (save[i] < k) 
+			i = i + j;
+
+		=>MPIS: 
+				j START
+			LOOP: 
+				add $s3, $s3, $s4 # i = i + j 
+		 	START:
+		 		add $t0, $s3, $s3 # do t0 = s3 + s3 = 2 * s3
+				add $t0, $t0, $t0 # t0 = t0 + t0 = 2 * t0 = 4 * s3 
+				add $t0, $t0, $s6 # t0 = 4*i + save  
+				lw $t1, 0($t0) # t1 = Mem[$t0 + 0] = A[i] 
+				slt $t3, $t1, $s5 # if (save[i] < k) $t0 = 1
+				bne $t3, $zero, LOOP
+
+
+	Jump and Link instruction: 
+		jal 
+
+
+	Stack and Procedure: 
+
+		MPIS:
+				jal leaf_example 
+				.
+				.
+				.	
+			leaf_ex:
+				addi $sp, $sp, -12 
+				sw $t0, 8($sp)
+				sw $t1, 4($sp)
+				sw $s0, 0($sp)
+
+				add $t0, $s0, ...
+				....
+
+		With temporary registers : do not need to save it before use. 
+		With state registers     : have to save it before use. 
+
+
+	Recursion: 
+
+		jal FACT 
+		...
+		...
+	FACT: 
+		addi $sp, $sp, -8 
+		sw $ra, 4($sp) # save return address
+		sw $a0, 0($sp) # save 'n'
+
+
+	Example: 
+		int fib (int n){
+			if (n<=1) return 1;
+			else return (fib(n-1)+fib(n-2));
+		}
+
+		MPIS: 
+			Fib: 
+				addi $sp, $sp, -12    # keep a 3 * 4 bytes free space  
+				sw $ra, 8($sp) 	      # save the $ra, $a0, $t2 
+				sw $a0, 4($sp) 
+				sw $t2, 0($sp) 
+
+				slti $t0, $a0, 2      # compare: if (n < 2) 
+				beq $t0, $zero, Not_greater_1  # Jump to the label if (n >= 2) 
+				addi $v0, $zero, 1    # set return value = 1 
+				addi $sp, $sp, 12     # recover stack pointer for the previous procedure
+				jr $ra 
+
+			Not_greater_1: 
+				addi $a0, $a0, -1     # n = n - 1 
+				jal Fib               # call recursion for fib(n-1) 
+				add $t2, $zero, $v0   # save the return value of fib(n-1) 
+
+				addi $a0, $a0, -1     # n = n - 1  (but it’s n-2 because n has been decreased by 1 before)
+				jal Fib               # call recursion for fib(n-2) 
+				add $v0, $v0, $t2     # set return value = fib(n-2) + fib(n-1)
+				
+				lw $t2, 0($sp)        # recover $t2, $a0, $ra
+				lw $a0, 4($sp)
+				lw $ra, 8($sp)
+
+				addi $sp, $sp, 12     # recover stack pointer for the previous procedure
+				jr $ra 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

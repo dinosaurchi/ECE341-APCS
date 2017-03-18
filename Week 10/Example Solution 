@@ -1,0 +1,22 @@
+Lw $t0, 120 ($t1) 􏰀􏰀 Index of $t0 is 8ten
+􏰀􏰀 Index of $t1 is 9ten
+􏰀􏰀 Value of $t1 = 1000ten
+􏰀􏰀 PC = 2000ten
+􏰀􏰀􏰀􏰀 [1120] = 400ten
+􏰀􏰀 Opcode for Lw is 35ten 􏰁􏰁 100011two
+
+(page 63/69) 
+
+
+Step 1: 
+	IR <= 35  -  8  -  9  -  120 
+	PC = 2000 + 4 = 2004 
+
+Step 2: 
+	A <= ￼8 
+	B <=  1000 
+
+	ALUOut <= 2004 +  120 * 4 
+
+Step 3: 
+	ALUOut <= 8 + 

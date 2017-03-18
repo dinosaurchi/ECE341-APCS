@@ -1,0 +1,6 @@
+Thu Feb 5, 2015 
+
+	PC = Register + Address (Branch address)
+
+	Why Unconditional Jump (UJ) needs 26 bits for address, but Conditional Jump (CJ) needs only 16bits address ? Because UJ have to jump between procedure and procedure, but CJ is used to implement Loop, If .. so it doesn't need to jump far. 
+

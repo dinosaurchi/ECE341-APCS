@@ -1,0 +1,100 @@
+	.data 
+# Data Buffers
+fileName:	
+	.asciiz "Week 4/Input.dat" 
+# Arrays
+arr:	
+	.word 1:100
+n:	
+	.word 0 
+x:  	
+	.word 0 
+buff:	
+	.word 0  
+
+	.text
+	.globl main 
+
+# OPEN FILE:
+	#=================================================================================
+	li  $v0, 13             # system call for open file
+	la  $a0,fileName          # input file name
+	li  $a1, 0              # flags
+	li  $a2, 0              # Open for reading (mode is 0: read, 1: write)
+	syscall                # open a file (file descriptor returned in $a0)
+	move $s0, $v0            # save the fd (syscall below will overwrite $a0)
+
+
+	# Ghi ham main trong day 
+	# Moi lan muon doc mot array portion (de giai tung cau hoi), thi chi can: 
+
+	jal ReadPortion 
+
+	# Sau do cu load cac gia tri tu 
+		arr 
+		n 
+		x 
+
+
+# CLOSE FILE: 
+	#=================================================================================
+	li  $v0, 16   # system call for close file
+	move $a0, $s0 # Restore fd
+	syscall       # close file
+
+
+
+
+#---------------
+ReadPortion:
+	addi $sp, $sp, -16   # keep a 3 * 4 bytes free space  
+	sw $s0, 12($sp)	
+	sw $a1, 8($sp) 
+	sw $a2, 4($sp)
+	sw $ra, 0($sp)
+
+	# Read n
+	li  $v0, 14  # system call to read from file
+	add $a0, $s0, $zero
+	la  $a1, n   # address of buffer to store read data.
+	li  $a2, 4   # read 4 bytes 
+	syscall      # read from file
+	
+	# Read array
+	lw $t0, n # t0 = n 
+	sll $t0, $t0, 2 # t0 = (n-1) * 4
+	la $t1, arr # t1 = arr (in the 1st element of arr)
+	add $v0, $zero, $t1 # Save the arr return value 
+	add $t0, $t0, $t1 # t0 = t0 + arr  (go to the end of the array)
+	
+		j Start_ReadFile
+	WhileLoop_ReadFile:
+		li  $v0, 14  # system call to read from file
+		add $a0, $s0, $zero
+		la  $a1, buff   # address of buffer to store read data.
+		li  $a2, 4      # read 4 bytes 
+		syscall         # read from file
+		
+		lw $t2, buff
+		sw $t2, 0($t1) 
+		
+		addi $t1, $t1, 4		
+	Start_ReadFile:
+		bne $t1, $t0, WhileLoop_ReadFile
+		
+	beq $a3, $0, Exit_ReadPortion	
+		
+	# Read x 
+	li  $v0, 14  # system call to read from file
+	add $a0, $s0, $zero
+	la  $a1, x   # address of buffer to store read data.
+	li  $a2, 4      # read 4 bytes 
+	syscall         # read from file
+
+Exit_ReadPortion:	
+	lw $ra, 0($sp)
+	lw $a2, 4($sp)
+	lw $a1, 8($sp) 
+	lw $s0, 12($sp)
+	addi $sp, $sp, 16 # recover stack pointer for the previous procedure
+	jr $ra

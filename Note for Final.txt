@@ -1,0 +1,162 @@
+Wed Apr 22, 2015 
+
+	Nonvolatile memory: does not lose its content when power is switched off.
+
+	ROM: 
+	EEPROM and flash RAM: nonvolatile, slower than RAM, can be rewritten
+	CMOS: volatile, Hold current time, date and configuration parameters, use small battery
+
+	Performance: 
+		Response time: The time between the start and completion of a task
+
+		Throughput: The total amount of work done in a given time
+
+		If Perf is response time: 
+			Perf_x = 1 / ExecutionTime_x 
+
+		CPU ExecutionTime = CPU ClockCycles * ClockCycleTime 
+
+		CPU ExecutionTime = CPU ClockCycles / ClockRate 
+
+		CPU clock cycles = InstructionsForAProgram * CPI
+
+			CPI is the average number of clock cycles that each instruction takes to execute
+
+		CPU ExecutionTime = Instruction count x CPI x Clock cycle time
+
+		CPU Clock cycles = sum(CPI[i] * C[i])
+			C[i] is the count of number of instruction of class i . 
+
+		Increases in CPU performance can come from 3 sources: 
+			+ ^ clock rate
+			+ v CPI via improving processor organization 
+			+ Compiler enhancements that lower the instruction count or generate instructions with a lower average CPI
+		
+--------------------------------------------------------------------------------------------------------------------------------------
+
+	Each MIPS arithmetic instruction :  
+		+ Performs only 1 operation
+		+ Must always have exactly 3 variables
+
+	Design Principle 1: 
+		Simplicity favors regularity : Requiring every add instruction to have exactly 3 operands -> keep the hardware simple
+
+	Design Principle 2: 
+		Smaller is faster
+
+		Big Endian: use the address of the leftmost byte as the word address
+		Small Endian: use the address of the rightmost byte
+
+		Spilling registers : Process of putting less commonly used variables (or those needed later) into memory
+
+	Design Principle 3:
+		Make the common case fast. 
+		R-Type
+
+	Design Principle 4:
+		Good design demands good compromises
+		I-Type 
+
+--------------------------------------------------------------------------------------------------------------------------------------
+
+	There are 2 methods to load Constant from register 
+
+	Registers $s0 to $s7 map onto registers 16 to 23
+	Registers $t0 to $t7 map onto registers 8 to 15
+
+	R-Type : op rs rt rd shamt funct 
+			 6  5  5  5  5     6
+
+		rs, rt, rd : 1st src, 2nd src, destination 
+		shamt      : shift amout (for shifting instruction)
+		funct      : represents the variant of the opcode  
+
+	I-Type : op rs rt const/address 
+			 6  5  5  16 
+			 => immediate or data transfer (cond. branch)
+
+	J-Type : op address 
+			 6  26 
+			 => uncond. branch 
+
+
+	Opcode tells the format of the instruction
+
+	j Label 
+	jr reg : jump to address in a register 
+
+	jal ProcedureAddress 
+		-> jump to the address 
+		-> $ra = PC + 4
+
+	caller : calling program 
+	callee : be called 
+
+	$gp : access to static data 
+
+	lui : laod upper immediately 
+
+	All conditional branches use PC-relative addressing
+
+	lb: Load a byte from memory and place it in the rightmost 8 bits of a register
+
+	lh $t0, 0($sp) : Load a halfword from memory
+	sh $t0, 0($sp)
+
+	A single operation can use more than 1 addressing mode
+
+
+--------------------------------------------------------------------------------------------------------------------------------------
+	Floating point: 
+		Comparison: 
+			c.x.s or c.x.d (where x is eq, neq, lt, le, gt, ge)
+
+		Branch:
+			bclt bclf
+
+		Load/Store: 
+			lwc1 / wc1  
+
+		IEEE 754 always keeps 2 extra bits on the right during intermediate additions: guard and round
+
+--------------------------------------------------------------------------------------------------------------------------------------
+	
+	Datepath: 
+
+		Two Omitted Aspects of Instruction Execution
+
+			+ Data going to a particular unit as coming from 2 different sources
+
+			+ Several units must be controlled depending on the type of instruction
+
+		Single-Cycle: 
+			Must have separate instruction and data memories 
+
+		Register file: 
+			Processor’s 32 general-purpose registers are stored in a structure called a register file
+
+			Input: (4)
+				5 bits wide for each 3 registers
+				32 bits wide for data (for write) 
+			Output: (2) 
+				32 bits wide for both 2 data 
+
+		ALU: 
+			Input: 
+				2 with 32 bits 
+			Output: 
+				32 bits result
+				1 bits signal of 0 
+				4 bit control signal 
+
+			
+
+
+
+
+	
+
+
+
+
+

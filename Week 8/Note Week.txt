@@ -1,0 +1,44 @@
+Thu Mar 26, 2015 
+
+	float f2c (float fahr){
+		return ((5.0/9.0) * (fahr – 32.0));
+	}
+
+	MIPS: 
+		lwcl $f0, const5($gp) 
+		lwcl $f1, const9($gp)
+		lwcl $f3, const32($gp) 
+
+		div.s $f0, $f0, $f1 
+		sub.s $f1, $f2, $f3 
+		mul.s $f0, $f0, $f1
+		jr $ra 
+
+
+	Solution Lecture 3 (p67) 
+
+		li $s0, 0
+
+		j Start1	
+	While1:
+			li $s1, 0
+			j Start2	
+		While2:
+				j Start3	
+			While3:
+				
+
+			Start3: 		
+
+		Start2: 	
+			bne $s1, 256, While2
+	Start1:
+		bne $s0, 256, While1
+
+
+
+HW: 
+	Print: Single Cycle, Multicycle 
+
+
+
